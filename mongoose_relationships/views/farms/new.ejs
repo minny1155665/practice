@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Farm</title>
+</head>
+<body>
+    <h1>Add a New Farm</h1>
+    <form action="/farms" method="post">
+        <label for="name">farm name</label>
+        <input type="text" name="name" id="name" placeholder="farm name">
+        <label for="city">city</label>
+        <input type="text" name="city" id="city" placeholder="farm city">
+        <label for="email">email</label>
+        <input type="email" name="email" id="email" placeholder="farm email">
+        <button type="submit">Submit</button>
+    </form>
+    <br>
+    <a href="/farms">All Farms List</a>
+</body>
+</html>
