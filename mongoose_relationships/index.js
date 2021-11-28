@@ -3,6 +3,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const methodOverride = require('method-override');
+const session = require('express-session');
+const flash = require('connect-flash');
+
 const Product = require('./models/product');
 const Farm = require('./models/farm');
 
@@ -11,6 +14,8 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
+app.use(session({secret: "secretmagic", resave: false, saveUninitialized: false}));
+app.use(flash());
 
 app.listen('8000', () => {
     console.log("Listening on port 8000");
@@ -25,6 +30,11 @@ mongoose.connect('mongodb://localhost:27017/farmStand', {useNewUrlParser: true, 
 })
 
 const categories = ['fruit', 'vegetable', 'dairy'];
+
+app.use((req, res, next) => {
+    res.locals.message = req.flash('success');
+    next();
+})
 
 // PRODUCT ROUTE
 // index
@@ -93,6 +103,7 @@ app.get('/farms/new', (req, res) => {
 app.post('/farms', async (req, res) => {
     const newFarm = new Farm(req.body);
     await newFarm.save();
+    req.flash('success', "Successfully added a new farm");
     res.redirect('/farms')
 })
 
@@ -118,6 +129,7 @@ app.post('/farms/:id/products', async (req, res) => {
 app.delete('/farms/:id', async (req, res) => {
     const { id } = req.params;
     await Farm.findByIdAndDelete(id);
+    req.flash('success', "Successfully deleted a farm");
     res.redirect('/farms');
 })
 
