@@ -26,7 +26,6 @@ router.post('/', validateReview, catchAsync(async (req, res) => {
     camp.reviews.push(review);
     await review.save();
     await camp.save();
-    console.log(camp);
     res.redirect(`/campgrounds/${ camp._id }`);
 }))
 
