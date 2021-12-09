@@ -20,6 +20,14 @@ app.listen(8000, () => {
     console.log("Listening on port 8000...");
 })
 
+// middleware
+const requireLogin = (req, res, next) => {
+    if (!req.session.user_id) {
+        return res.redirect('/login');
+    }
+    next();
+}
+
 // home page
 app.get('/home', (req, res) => {
     res.send("home page!");
@@ -32,11 +40,7 @@ app.get('/register', (req, res) => {
 
 app.post('/register', async (req, res) => {
     const {username, password} = req.body;
-    const hash = await bcrypt.hash(password, 12);
-    const user = new User({
-        username,
-        password: hash
-    });
+    const user = new User({ username, password });
     await user.save();
     req.session.user_id = user._id;
     res.redirect('/secret');
@@ -49,9 +53,8 @@ app.get('/login', (req, res) => {
 
 app.post('/login', async (req, res) => {
     const {username, password} = req.body;
-    const user = await User.findOne({ username });
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (validPassword) {
+    const user = await User.validate(username, password);
+    if (user) {
         req.session.user_id = user._id;
         res.redirect('/secret');
     } else {
@@ -66,10 +69,6 @@ app.post('/logout', (req, res) => {
 })
 
 // secret
-app.get('/secret', (req, res) => {
-    if (!req.session.user_id){
-        res.redirect('/login');
-    } else {
-        res.render('secret');
-    }
+app.get('/secret', requireLogin, (req, res) => {
+    res.render('secret');
 })
