@@ -59,10 +59,17 @@ app.post('/login', async (req, res) => {
     }
 })
 
+// log out
+app.post('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/login')
+})
+
 // secret
 app.get('/secret', (req, res) => {
     if (!req.session.user_id){
         res.redirect('/login');
+    } else {
+        res.render('secret');
     }
-    res.send(`secret!!!`);
 })
