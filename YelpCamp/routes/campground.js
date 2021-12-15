@@ -5,6 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const ExpressError = require('../utils/ExpressError');
 const Campground = require('../models/campground');
 const { campgroundSchema } = require('../joiSchema');
+const { isLoggedIn } = require('../middleware');
 
 // validate with JOI
 const validateCampground = (req, res, next) => {
@@ -25,11 +26,11 @@ router.get('/', catchAsync(async (req, res) => {
 }))
 
 // new
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn, (req, res) => {
     res.render('campgrounds/new');
 })
 
-router.post('/', validateCampground, catchAsync(async (req, res, next) => {
+router.post('/', validateCampground, isLoggedIn, catchAsync(async (req, res, next) => {
     const newCamp = new Campground(req.body);
     await newCamp.save();
     req.flash('success', 'Succesfully made a campground');
